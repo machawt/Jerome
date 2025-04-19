@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+  <meta charset="UTF-8">
+  <title>Homilia Prima (Latin)</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: linear-gradient(to right, #f8f9fa, #e1f5fe);
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #4e342e;
+    }
+    .verse {
+      background-color: #ffffffdd;
+      border-left: 5px solid #90caf9;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 10px;
+      position: relative;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #1976d2;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0d47a1;
+    }
+    .speak-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff7043;
+    }
+    .translation {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #e3f2fd;
+      border-radius: 5px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Homilia Prima (Latin)</h1>
+<div id="verses"></div>
+
+<div class="controls">
+  <button onclick="prev()">⬅ Back</button>
+  <button onclick="next()">Forward ➡</button>
+</div>
+
+<script>
+  const lines = [
+    "Et factum est in anno quo mortuus est Ozias rex, vidi Dominum sedentem super solium excelsum.",
+    "Quamdiu Osias rex vixit, non potuit visionem videre Isaias propheta.",
+    "Erat enim Osias peccator, et faciens malignum ante conspectum Domini.",
+    "Ingressus est templum et sancta sanctorum, et ob hoc lepra perfusus in fronte est.",
+    "Tunc videmus, statim ut moritur Osias, gloriam Dei.",
+    "Tantum hoc sit ut regnet in nobis sermo ejus qui dixit: Ego autem constitutus sum rex ab eo.",
+    "Non ergo regnet peccatum in mortali vestro corpore.",
+    "Miserabilis ille homo, cui peccatum regnat, qui tali se tradit regi.",
+    "Voluptatis amator, non est amator Dei.",
+    "Habent figurationem pietatis, virtutem autem ejus negantes."
+  ];
+
+  const translations = [
+    "And it came to pass in the year that King Uzziah died, I saw the Lord sitting upon a high throne.",
+    "As long as King Uzziah lived, the prophet Isaiah could not see the vision.",
+    "For Uzziah was a sinner, doing evil before the sight of the Lord.",
+    "He entered the temple and the Holy of Holies, and because of this, leprosy broke out on his forehead.",
+    "Then we see — as soon as Uzziah dies — the glory of God.",
+    "Let only this happen: that His word reigns in us, He who said: 'I have been set as king by Him.'",
+    "Therefore, let not sin reign in your mortal body.",
+    "Wretched is the man over whom sin reigns, who gives himself over to such a king.",
+    "A lover of pleasure is not a lover of God.",
+    "They have the form of godliness, but deny its power."
+  ];
+
+  let currentPage = 0;
+  const linesPerPage = 5;
+
+  function renderVerses() {
+    const container = document.getElementById('verses');
+    container.innerHTML = '';
+    const start = currentPage * linesPerPage;
+    const end = Math.min(start + linesPerPage, lines.length);
+    for (let i = start; i < end; i++) {
+      const verse = document.createElement('div');
+      verse.className = 'verse';
+      verse.innerHTML = `
+        <span>${lines[i]}</span>
+        <button class="speak-btn" onclick="speak('${lines[i].replace(/'/g, "\\'")}')">🔊 Pronounce</button>
+        <br>
+        <button onclick="toggleTranslation(this, ${i})">📘 Show Translation</button>
+        <div class="translation" style="display:none;" id="trans-${i}">${translations[i]}</div>
+      `;
+      container.appendChild(verse);
+    }
+  }
+
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'la'; // Latin
+    speechSynthesis.speak(utterance);
+  }
+
+  function toggleTranslation(button, index) {
+    const transDiv = document.getElementById(`trans-${index}`);
+    if (transDiv.style.display === 'none') {
+      transDiv.style.display = 'block';
+      button.innerText = '📕 Hide Translation';
+    } else {
+      transDiv.style.display = 'none';
+      button.innerText = '📘 Show Translation';
+    }
+  }
+
+  function prev() {
+    if (currentPage > 0) {
+      currentPage--;
+      renderVerses();
+    }
+  }
+
+  function next() {
+    if ((currentPage + 1) * linesPerPage < lines.length) {
+      currentPage++;
+      renderVerses();
+    }
+  }
+
+  renderVerses();
+</script>
+
+</body>
+</html>

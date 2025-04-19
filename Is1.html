@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isaiah 1 Latin Word Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      text-align: center;
+      background: #f4f4f9;
+    }
+    .word-button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      background-color: #e0e0ff;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .translation {
+      display: block;
+      font-size: 12px;
+      color: #333;
+    }
+    .word-button:hover {
+      background-color: #c0c0ff;
+    }
+    .controls {
+      margin: 1rem 0;
+    }
+    .message {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .completion {
+      display: none;
+      font-size: 24px;
+      color: green;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Isaiah Chapter 1 - Latin Word Game</h1>
+  <div class="controls">
+    <button id="backBtn">⟵ Previous</button>
+    <button id="forwardBtn">Next ⟶</button>
+    <label><input type="checkbox" id="toggleTranslation" /> Show English</label>
+  </div>
+  <div id="game"></div>
+  <div class="message" id="message"></div>
+  <div class="completion" id="completion">🎉 Well done! You've completed the chapter! 🎉</div>
+
+  <script>
+    const verses = [
+      {
+        words: [
+          ["Visio", "Vision"], ["Isaiae", "of Isaiah"], ["filii", "son"], ["Amoz", "of Amoz"],
+          ["quam", "which"], ["vidit", "he saw"], ["super", "concerning"], ["Iudam", "Judah"],
+          ["et", "and"], ["Ierusalem", "Jerusalem"], ["in", "in"], ["diebus", "the days"],
+          ["Oziae", "of Uzziah"], ["Ioatham", "Jotham"], ["Achaz", "Ahaz"], ["Ezechiae", "Hezekiah"],
+          ["regum", "kings"], ["Iuda", "of Judah"]
+        ]
+      },
+      {
+        words: [
+          ["Audite", "Hear"], ["caeli", "heavens"], ["et", "and"], ["auribus", "give ear"],
+          ["percipe", "listen"], ["terra", "earth"], ["quia", "for"], ["Dominus", "the Lord"],
+          ["locutus", "has spoken"], ["est", "has"]
+        ]
+      },
+      {
+        words: [
+          ["Filios", "Children"], ["enutrivi", "I raised"], ["et", "and"], ["exaltavi", "I exalted"],
+          ["ipsi", "they"], ["autem", "but"], ["spreverunt", "have rebelled"], ["me", "against me"]
+        ]
+      },
+      // Add more verses with their translations
+    ];
+
+    let currentVerse = 0;
+    const gameContainer = document.getElementById('game');
+    const toggleTranslation = document.getElementById('toggleTranslation');
+    const messageContainer = document.getElementById('message');
+    const completionContainer = document.getElementById('completion');
+    const backBtn = document.getElementById('backBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+
+    function renderVerse(verseIndex) {
+      const verse = verses[verseIndex];
+      gameContainer.innerHTML = '';
+      verse.words.forEach(([word, translation]) => {
+        const button = document.createElement('button');
+        button.classList.add('word-button');
+
+        const wordSpan = document.createElement('span');
+        wordSpan.textContent = word;
+        button.appendChild(wordSpan);
+
+        const translationSpan = document.createElement('span');
+        translationSpan.className = 'translation';
+        translationSpan.textContent = translation;
+        translationSpan.style.display = toggleTranslation.checked ? 'block' : 'none';
+        button.appendChild(translationSpan);
+
+        button.onclick = () => {
+          const speech = new SpeechSynthesisUtterance(word);
+          speech.lang = 'la';
+          window.speechSynthesis.speak(speech);
+        };
+
+        gameContainer.appendChild(button);
+      });
+    }
+
+    toggleTranslation.addEventListener('change', () => renderVerse(currentVerse));
+
+    function nextVerse() {
+      if (currentVerse < verses.length - 1) {
+        currentVerse++;
+        renderVerse(currentVerse);
+        messageContainer.textContent = `Verse ${currentVerse + 1} loaded`;
+      } else {
+        completionContainer.style.display = 'block';
+        setTimeout(() => {
+          completionContainer.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    function previousVerse() {
+      if (currentVerse > 0) {
+        currentVerse--;
+        renderVerse(currentVerse);
+        messageContainer.textContent = `Verse ${currentVerse + 1} loaded`;
+      }
+    }
+
+    backBtn.addEventListener('click', previousVerse);
+    forwardBtn.addEventListener('click', nextVerse);
+
+    renderVerse(currentVerse);
+  </script>
+</body>
+</html>

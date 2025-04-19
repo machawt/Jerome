@@ -1,154 +1,150 @@
 <!DOCTYPE html>
-<html lang="la">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Homilia Prima (Latin)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Homilia Viewer</title>
   <style>
     body {
-      font-family: 'Georgia', serif;
-      background: linear-gradient(to right, #f8f9fa, #e1f5fe);
-      color: #333;
-      padding: 2rem;
-      max-width: 800px;
+      font-family: Arial, sans-serif;
+      background: #f4f4f8;
+      padding: 20px;
+      max-width: 700px;
       margin: auto;
     }
-    h1 {
-      text-align: center;
-      color: #4e342e;
-    }
     .verse {
-      background-color: #ffffffdd;
-      border-left: 5px solid #90caf9;
-      margin: 1rem 0;
-      padding: 1rem;
-      border-radius: 10px;
-      position: relative;
-    }
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
+      margin-bottom: 1.5em;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     button {
-      padding: 0.5rem 1rem;
-      margin-top: 0.5rem;
-      border: none;
-      border-radius: 5px;
-      background-color: #1976d2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+      margin-right: 10px;
+      margin-top: 5px;
     }
-    button:hover {
-      background-color: #0d47a1;
+    #controls {
+      margin-bottom: 20px;
     }
-    .speak-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #ff7043;
-    }
-    .translation {
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      background-color: #e3f2fd;
-      border-radius: 5px;
-      font-style: italic;
+    select {
+      margin-bottom: 10px;
+      padding: 6px;
     }
   </style>
 </head>
 <body>
 
-<h1>Homilia Prima (Latin)</h1>
-<div id="verses"></div>
+  <h1>Homilia Viewer</h1>
 
-<div class="controls">
-  <button onclick="prev()">⬅ Back</button>
-  <button onclick="next()">Forward ➡</button>
-</div>
+  <div id="controls">
+    <label for="chapterSelect">Choose Chapter:</label>
+    <select id="chapterSelect"></select>
+    <br/>
+    <button onclick="prev()">⟵ Back</button>
+    <button onclick="next()">Next ⟶</button>
+  </div>
 
-<script>
-  const lines = [
-    "Et factum est in anno quo mortuus est Ozias rex, vidi Dominum sedentem super solium excelsum.",
-    "Quamdiu Osias rex vixit, non potuit visionem videre Isaias propheta.",
-    "Erat enim Osias peccator, et faciens malignum ante conspectum Domini.",
-    "Ingressus est templum et sancta sanctorum, et ob hoc lepra perfusus in fronte est.",
-    "Tunc videmus, statim ut moritur Osias, gloriam Dei.",
-    "Tantum hoc sit ut regnet in nobis sermo ejus qui dixit: Ego autem constitutus sum rex ab eo.",
-    "Non ergo regnet peccatum in mortali vestro corpore.",
-    "Miserabilis ille homo, cui peccatum regnat, qui tali se tradit regi.",
-    "Voluptatis amator, non est amator Dei.",
-    "Habent figurationem pietatis, virtutem autem ejus negantes."
-  ];
+  <div id="verses"></div>
 
-  const translations = [
-    "And it came to pass in the year that King Uzziah died, I saw the Lord sitting upon a high throne.",
-    "As long as King Uzziah lived, the prophet Isaiah could not see the vision.",
-    "For Uzziah was a sinner, doing evil before the sight of the Lord.",
-    "He entered the temple and the Holy of Holies, and because of this, leprosy broke out on his forehead.",
-    "Then we see — as soon as Uzziah dies — the glory of God.",
-    "Let only this happen: that His word reigns in us, He who said: 'I have been set as king by Him.'",
-    "Therefore, let not sin reign in your mortal body.",
-    "Wretched is the man over whom sin reigns, who gives himself over to such a king.",
-    "A lover of pleasure is not a lover of God.",
-    "They have the form of godliness, but deny its power."
-  ];
+  <script>
+    const chapters = [
+      {
+        title: "Chapter I",
+        latin: [
+          "Haec propter mortem regis Osiae, post cujus interitum vidisse se ait visionem Propheta.",
+          "Quae est autem visio?",
+          "Vidi Dominum sedentem super thronum excelsum et elevatum, etc."
+        ],
+        english: [
+          "This was on account of the death of King Uzziah, after whose demise the Prophet said he saw the vision.",
+          "And what is the vision?",
+          "I saw the Lord seated on a high and elevated throne, etc."
+        ]
+      },
+      {
+        title: "Chapter II",
+        latin: [
+          "Non omnis qui videt Deum, videt eum sedentem super thronum excelsum et elevatum.",
+          "Scio alium prophetam vidisse Dominum, et vidisse eum super thronum sedentem.",
+          "Et veniam, ut sedeam ad judicandum populum in valle Josaphat."
+        ],
+        english: [
+          "Not everyone who sees God sees Him seated on a high and exalted throne.",
+          "I know another prophet saw the Lord seated on a throne.",
+          "And I will come to judge the people in the Valley of Jehoshaphat."
+        ]
+      }
+      // Add more chapters here...
+    ];
 
-  let currentPage = 0;
-  const linesPerPage = 5;
+    const chapterSelect = document.getElementById("chapterSelect");
+    const versesDiv = document.getElementById("verses");
+    let currentChapter = 0;
+    let currentIndex = 0;
+    const pageSize = 5;
 
-  function renderVerses() {
-    const container = document.getElementById('verses');
-    container.innerHTML = '';
-    const start = currentPage * linesPerPage;
-    const end = Math.min(start + linesPerPage, lines.length);
-    for (let i = start; i < end; i++) {
-      const verse = document.createElement('div');
-      verse.className = 'verse';
-      verse.innerHTML = `
-        <span>${lines[i]}</span>
-        <button class="speak-btn" onclick="speak('${lines[i].replace(/'/g, "\\'")}')">🔊 Pronounce</button>
-        <br>
-        <button onclick="toggleTranslation(this, ${i})">📘 Show Translation</button>
-        <div class="translation" style="display:none;" id="trans-${i}">${translations[i]}</div>
-      `;
-      container.appendChild(verse);
+    function populateChapterMenu() {
+      chapters.forEach((chap, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = chap.title;
+        chapterSelect.appendChild(option);
+      });
     }
-  }
 
-  function speak(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'la'; // Latin
-    speechSynthesis.speak(utterance);
-  }
+    chapterSelect.addEventListener("change", () => {
+      currentChapter = parseInt(chapterSelect.value);
+      currentIndex = 0;
+      render();
+    });
 
-  function toggleTranslation(button, index) {
-    const transDiv = document.getElementById(`trans-${index}`);
-    if (transDiv.style.display === 'none') {
-      transDiv.style.display = 'block';
-      button.innerText = '📕 Hide Translation';
-    } else {
-      transDiv.style.display = 'none';
-      button.innerText = '📘 Show Translation';
+    function render() {
+      versesDiv.innerHTML = "";
+      const chapter = chapters[currentChapter];
+      for (let i = currentIndex; i < Math.min(currentIndex + pageSize, chapter.latin.length); i++) {
+        const div = document.createElement("div");
+        div.className = "verse";
+        div.innerHTML = `
+          <strong>Latin:</strong> ${chapter.latin[i]}<br/>
+          <button onclick="pronounce('${chapter.latin[i]}')">🔊 Pronounce</button>
+          <button onclick="toggleTranslation(this, '${chapter.english[i]}')">💬 Show Translation</button>
+          <div class="translation" style="display:none; margin-top:5px;"><em>${chapter.english[i]}</em></div>
+        `;
+        versesDiv.appendChild(div);
+      }
     }
-  }
 
-  function prev() {
-    if (currentPage > 0) {
-      currentPage--;
-      renderVerses();
+    function toggleTranslation(button, translation) {
+      const translationDiv = button.nextElementSibling;
+      const isVisible = translationDiv.style.display === "block";
+      translationDiv.style.display = isVisible ? "none" : "block";
+      button.textContent = isVisible ? "💬 Show Translation" : "🙈 Hide Translation";
     }
-  }
 
-  function next() {
-    if ((currentPage + 1) * linesPerPage < lines.length) {
-      currentPage++;
-      renderVerses();
+    function pronounce(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "la";
+      speechSynthesis.speak(utterance);
     }
-  }
 
-  renderVerses();
-</script>
+    function next() {
+      const chapter = chapters[currentChapter];
+      if (currentIndex + pageSize < chapter.latin.length) {
+        currentIndex += pageSize;
+        render();
+      }
+    }
+
+    function prev() {
+      if (currentIndex - pageSize >= 0) {
+        currentIndex -= pageSize;
+        render();
+      }
+    }
+
+    populateChapterMenu();
+    render();
+  </script>
 
 </body>
 </html>

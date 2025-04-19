@@ -2,14 +2,14 @@
 <html lang="la">
 <head>
   <meta charset="UTF-8">
-  <title>Isaiah Latin</title>
+  <title>Homilia Prima</title>
   <style>
     body {
       font-family: 'Georgia', serif;
-      background: linear-gradient(to right, #f8f9fa, #e1f5fe);
+      background: linear-gradient(to right, #f0f4c3, #e1f5fe);
       color: #333;
       padding: 2rem;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
     h1 {
@@ -17,8 +17,8 @@
       color: #4e342e;
     }
     .verse {
-      background-color: #ffffffdd;
-      border-left: 5px solid #90caf9;
+      background-color: #ffffffee;
+      border-left: 6px solid #64b5f6;
       margin: 1rem 0;
       padding: 1rem;
       border-radius: 10px;
@@ -34,19 +34,19 @@
       margin-top: 0.5rem;
       border: none;
       border-radius: 5px;
-      background-color: #1976d2;
+      background-color: #0288d1;
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
     button:hover {
-      background-color: #0d47a1;
+      background-color: #01579b;
     }
     .speak-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: #ff7043;
+      background-color: #ef6c00;
     }
     .translation {
       margin-top: 0.5rem;
@@ -54,16 +54,13 @@
       background-color: #e3f2fd;
       border-radius: 5px;
       font-style: italic;
+      display: none;
     }
   </style>
 </head>
 <body>
 
-<h1>Isaiah Index</h1>
-<ul>
-  <li><a href="orig1.html>Origen Homily I</a></li>
-</ul>
-  
+<h1>Homilia Prima (Latin with Translation)</h1>
 <div id="verses"></div>
 
 <div class="controls">
@@ -72,7 +69,7 @@
 </div>
 
 <script>
-  const lines = [
+  const latinLines = [
     "Et factum est in anno quo mortuus est Ozias rex, vidi Dominum sedentem super solium excelsum.",
     "Quamdiu Osias rex vixit, non potuit visionem videre Isaias propheta.",
     "Erat enim Osias peccator, et faciens malignum ante conspectum Domini.",
@@ -85,36 +82,37 @@
     "Habent figurationem pietatis, virtutem autem ejus negantes."
   ];
 
-  const translations = [
-    "And it came to pass in the year that King Uzziah died, I saw the Lord sitting upon a high throne.",
+  const englishLines = [
+    "And it happened in the year King Uzziah died, I saw the Lord sitting upon a high throne.",
     "As long as King Uzziah lived, the prophet Isaiah could not see the vision.",
-    "For Uzziah was a sinner, doing evil before the sight of the Lord.",
-    "He entered the temple and the Holy of Holies, and because of this, leprosy broke out on his forehead.",
+    "For Uzziah was a sinner, doing evil in the sight of the Lord.",
+    "He entered the temple and the Holy of Holies, and because of this, was struck with leprosy on his forehead.",
     "Then we see — as soon as Uzziah dies — the glory of God.",
-    "Let only this happen: that His word reigns in us, He who said: 'I have been set as king by Him.'",
-    "Therefore, let not sin reign in your mortal body.",
-    "Wretched is the man over whom sin reigns, who gives himself over to such a king.",
+    "Let it be only this: that His word may reign in us, He who said: 'I was appointed king by Him.'",
+    "Therefore, let sin not reign in your mortal body.",
+    "Wretched is the man ruled by sin, who gives himself to such a king.",
     "A lover of pleasure is not a lover of God.",
-    "They have the form of godliness, but deny its power."
+    "They have the form of godliness but deny its power."
   ];
 
   let currentPage = 0;
-  const linesPerPage = 5;
+  const perPage = 5;
 
   function renderVerses() {
     const container = document.getElementById('verses');
     container.innerHTML = '';
-    const start = currentPage * linesPerPage;
-    const end = Math.min(start + linesPerPage, lines.length);
+    const start = currentPage * perPage;
+    const end = Math.min(start + perPage, latinLines.length);
+
     for (let i = start; i < end; i++) {
       const verse = document.createElement('div');
       verse.className = 'verse';
       verse.innerHTML = `
-        <span>${lines[i]}</span>
-        <button class="speak-btn" onclick="speak('${lines[i].replace(/'/g, "\\'")}')">🔊 Pronounce</button>
+        <span>${latinLines[i]}</span>
+        <button class="speak-btn" onclick="speak('${latinLines[i].replace(/'/g, "\\'")}')">🔊</button>
         <br>
         <button onclick="toggleTranslation(this, ${i})">📘 Show Translation</button>
-        <div class="translation" style="display:none;" id="trans-${i}">${translations[i]}</div>
+        <div class="translation" id="trans-${i}">${englishLines[i]}</div>
       `;
       container.appendChild(verse);
     }
@@ -126,27 +124,27 @@
     speechSynthesis.speak(utterance);
   }
 
-  function toggleTranslation(button, index) {
-    const transDiv = document.getElementById(`trans-${index}`);
-    if (transDiv.style.display === 'none') {
-      transDiv.style.display = 'block';
-      button.innerText = '📕 Hide Translation';
+  function toggleTranslation(btn, index) {
+    const el = document.getElementById(`trans-${index}`);
+    if (el.style.display === 'none' || el.style.display === '') {
+      el.style.display = 'block';
+      btn.innerText = '📕 Hide Translation';
     } else {
-      transDiv.style.display = 'none';
-      button.innerText = '📘 Show Translation';
+      el.style.display = 'none';
+      btn.innerText = '📘 Show Translation';
+    }
+  }
+
+  function next() {
+    if ((currentPage + 1) * perPage < latinLines.length) {
+      currentPage++;
+      renderVerses();
     }
   }
 
   function prev() {
     if (currentPage > 0) {
       currentPage--;
-      renderVerses();
-    }
-  }
-
-  function next() {
-    if ((currentPage + 1) * linesPerPage < lines.length) {
-      currentPage++;
       renderVerses();
     }
   }
